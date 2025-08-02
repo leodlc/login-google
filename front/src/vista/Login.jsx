@@ -3,6 +3,8 @@ import { auth, provider, signInWithPopup } from '../firebase';
 import { loginConGoogle } from '../controlador/AuthController';
 import GoogleIcon from '@mui/icons-material/Google';
 import ValidatedInput from '../componentes/ValidatedInput';
+import { Backdrop, CircularProgress } from '@mui/material';
+
 
 
 import {
@@ -24,6 +26,7 @@ const Login = () => {
   const regexPassword = /[\w@.-]/;         // sin flags globales
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -33,10 +36,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje('');
+    setCargando(true);
 
     const erroresVal = validarLogin(formulario);
     if (Object.keys(erroresVal).length > 0) {
       setErrores(erroresVal);
+      setCargando(false);
       return;
     }
 
@@ -51,8 +56,21 @@ const Login = () => {
       const mensajeError =
         error.response?.data?.error || 'Error inesperado en el login';
       setMensaje(mensajeError);
+    } finally {
+      setCargando(false);
     }
   };
+
+
+  {cargando && (
+    <Backdrop
+      open={true}
+      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
+      <CircularProgress color="inherit" />
+    </Backdrop>
+  )}
+
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
@@ -96,6 +114,7 @@ const Login = () => {
             variant="outlined"
             startIcon={<GoogleIcon />}
             onClick={async () => {
+              setCargando(true);
               try {
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
@@ -107,6 +126,8 @@ const Login = () => {
               } catch (error) {
                 console.error('Error con Google Login:', error);
                 setMensaje('Fallo al iniciar sesión con Google');
+              } finally {
+                setCargando(false);
               }
             }}
             sx={{ mt: 2 }}

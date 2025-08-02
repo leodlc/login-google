@@ -17,18 +17,21 @@ const ProductoCard = ({ producto, onEditar, onEliminar }) => {
   const imagen = producto.IMG_URL_PRODUCTO || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
 
   return (
-    <Card sx={{
-      height: 400,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      borderRadius: 2,
-      boxShadow: 3
-    }}>
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        borderRadius: 2,
+        boxShadow: 3,
+        p: 2,
+      }}
+    >
       <CardHeader
         avatar={<Avatar>{producto.NOMBRE_PRODUCTO.charAt(0)}</Avatar>}
         title={producto.NOMBRE_PRODUCTO}
-        titleTypographyProps={{ fontSize: '1rem', fontWeight: 'bold' }}
+        titleTypographyProps={{ fontSize: '1.1rem', fontWeight: 'bold' }}
         sx={{ pb: 0 }}
       />
       <CardContent sx={{ flexGrow: 1 }}>
@@ -38,16 +41,16 @@ const ProductoCard = ({ producto, onEditar, onEliminar }) => {
           alt={producto.NOMBRE_PRODUCTO}
           sx={{
             width: '100%',
-            height: 150,
+            height: 200,
             objectFit: 'cover',
-            borderRadius: 1,
+            borderRadius: 2,
             mb: 1,
           }}
         />
-        <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
           {producto.DESCRIPCION_PRODUCTO || 'Sin descripción'}
         </Typography>
-        <Typography variant="body1" fontWeight="bold">
+        <Typography variant="body1" fontWeight="bold" mb={0.5}>
           Precio: ${producto.PRECIO_PRODUCTO}
         </Typography>
         <Typography variant="body2">
@@ -55,7 +58,7 @@ const ProductoCard = ({ producto, onEditar, onEliminar }) => {
         </Typography>
       </CardContent>
       <Divider />
-      <Box p={1} display="flex" justifyContent="space-between">
+      <Box mt={1} display="flex" justifyContent="space-between">
         <IconButton color="primary" onClick={() => onEditar(producto)}>
           <EditIcon />
         </IconButton>

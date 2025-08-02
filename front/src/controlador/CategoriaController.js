@@ -22,3 +22,34 @@ export const crearCategoria = async (categoria) => {
     throw error;
   }
 };
+
+export const actualizarCategoria = async (id, categoria) => {
+  try {
+    const response = await axios.patch(`${API_BASE_URL}/${id}`, categoria);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar categoría con ID ${id}:`, error);
+    throw error;
+  }
+};
+
+export const eliminarCategoria = async (id) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al eliminar categoría con ID ${id}:`, error);
+    throw error;
+  }
+};
+
+export const verificarProductosPorCategoria = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${id}/validarProductos`);
+    return response.data.tieneProductos; // true o false
+  } catch (error) {
+    console.error(`Error al validar productos de la categoría ${id}:`, error);
+    return false;
+  }
+};
+

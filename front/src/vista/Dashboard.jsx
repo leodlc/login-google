@@ -65,15 +65,43 @@ function Dashboard() {
 
       {/* Navegación */}
       <List>
-        <ListItem button selected={selectedSection === 'productos'} onClick={() => setSelectedSection('productos')}>
+        <ListItem
+          button
+          selected={selectedSection === 'productos'}
+          onClick={() => setSelectedSection('productos')}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              backgroundColor: '#e3f2fd',
+            },
+            ...(selectedSection === 'productos' && {
+              backgroundColor: '#bbdefb',
+            }),
+          }}
+        >
           <ListItemIcon><ShoppingCartIcon /></ListItemIcon>
           <ListItemText primary="Productos" />
         </ListItem>
-        <ListItem button selected={selectedSection === 'categorias'} onClick={() => setSelectedSection('categorias')}>
+
+        <ListItem
+          button
+          selected={selectedSection === 'categorias'}
+          onClick={() => setSelectedSection('categorias')}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              backgroundColor: '#e3f2fd',
+            },
+            ...(selectedSection === 'categorias' && {
+              backgroundColor: '#bbdefb',
+            }),
+          }}
+        >
           <ListItemIcon><CategoryIcon /></ListItemIcon>
           <ListItemText primary="Categorías" />
         </ListItem>
       </List>
+
 
       {/* Espaciador */}
       <Box sx={{ flexGrow: 1 }} />
@@ -82,11 +110,25 @@ function Dashboard() {
 
       {/* Cerrar sesión */}
       <List>
-        <ListItem button onClick={cerrarSesion}>
+        <ListItem
+          button
+          onClick={cerrarSesion}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              backgroundColor: '#ffebee',
+              color: '#d32f2f',
+              '& .MuiListItemIcon-root': {
+                color: '#d32f2f',
+              },
+            },
+          }}
+        >
           <ListItemIcon><LogoutIcon /></ListItemIcon>
           <ListItemText primary="Cerrar sesión" />
         </ListItem>
       </List>
+
     </div>
   );
 

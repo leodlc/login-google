@@ -14,7 +14,8 @@ import {
   MenuItem,
   Select,
   InputLabel,
-  FormControl
+  FormControl,
+  Stack
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import {
@@ -31,6 +32,7 @@ const Productos = () => {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [busqueda, setBusqueda] = useState('');
+  const [categoriaFiltro, setCategoriaFiltro] = useState('');
   const [openModal, setOpenModal] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null);
@@ -60,9 +62,11 @@ const Productos = () => {
     setCategorias(data);
   };
 
-  const productosFiltrados = productos.filter(p =>
-    p.NOMBRE_PRODUCTO.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const productosFiltrados = productos.filter(p => {
+    const coincideBusqueda = p.NOMBRE_PRODUCTO.toLowerCase().includes(busqueda.toLowerCase());
+    const coincideCategoria = categoriaFiltro ? p.ID_CATEGORIA === categoriaFiltro : true;
+    return coincideBusqueda && coincideCategoria;
+  });
 
   const handleOpenModal = () => {
     setModoEdicion(false);
@@ -154,18 +158,39 @@ const Productos = () => {
         </Button>
       </Box>
 
-      <ValidatedInput
-        label="Buscar producto"
-        name="busqueda"
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-        placeholder="Buscar por nombre"
-        regexPermitido={/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]*$/}
-        error={''}
-        setError={() => {}}
-      />
+      {/* Filtros de búsqueda y categoría */}
+      <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+        <ValidatedInput
+          label="Buscar producto"
+          name="busqueda"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          placeholder="Buscar por nombre"
+          regexPermitido={/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]*$/}
+          error={''}
+          setError={() => {}}
+        />
 
-      <Grid container spacing={2} mt={1}>
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel id="categoria-label">Categoría</InputLabel>
+          <Select
+            labelId="categoria-label"
+            value={categoriaFiltro}
+            onChange={(e) => setCategoriaFiltro(e.target.value)}
+            label="Categoría"
+            color="primary"
+          >
+            <MenuItem value="">Todas las categorías</MenuItem>
+            {categorias.map((cat) => (
+              <MenuItem key={cat.ID_CATEGORIA} value={cat.ID_CATEGORIA}>
+                {cat.NOMBRE_CATEGORIA}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
+
+      <Grid container spacing={3}>
         {productosFiltrados.map(producto => (
           <Grid item xs={12} sm={6} md={4} key={producto.ID_PRODUCTO}>
             <ProductoCard
