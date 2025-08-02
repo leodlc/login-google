@@ -1,0 +1,45 @@
+# Archivos y directorios ignorados globalmente
+node_modules/
+.DS_Store
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+
+# Directorios de dependencias
+**/node_modules/
+
+# Entornos de desarrollo
+dist/
+build/
+coverage/
+.vscode/
+.idea/
+
+# Archivos de configuración local
+*.local
+
+# Archivos de sistema
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Dependencias opcionales
+bower_components/
+
+# Cache
+.cache/
+
+# Paquetes
+*.tgz
+
+# Editor
+*.swp
+*.swo
+
+# Proyectos de React
+**/.eslintcache

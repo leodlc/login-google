@@ -1,0 +1,23 @@
+// app/models/producto.js
+
+class Producto {
+  constructor({
+    ID_PRODUCTO,
+    ID_CATEGORIA,
+    NOMBRE_PRODUCTO,
+    DESCRIPCION_PRODUCTO,
+    PRECIO_PRODUCTO,
+    IMG_URL_PRODUCTO,
+    IVA_PRODUCTO
+  }) {
+    this.ID_PRODUCTO = ID_PRODUCTO;
+    this.ID_CATEGORIA = ID_CATEGORIA;
+    this.NOMBRE_PRODUCTO = NOMBRE_PRODUCTO;
+    this.DESCRIPCION_PRODUCTO = DESCRIPCION_PRODUCTO;
+    this.PRECIO_PRODUCTO = PRECIO_PRODUCTO;
+    this.IMG_URL_PRODUCTO = IMG_URL_PRODUCTO;
+    this.IVA_PRODUCTO = IVA_PRODUCTO;
+  }
+}
+
+module.exports = Producto;

@@ -1,0 +1,9 @@
+class Categoria {
+  constructor({ ID_CATEGORIA, NOMBRE_CATEGORIA, DESCRIPCION_CATEGORIA }) {
+    this.ID_CATEGORIA = ID_CATEGORIA;
+    this.NOMBRE_CATEGORIA = NOMBRE_CATEGORIA;
+    this.DESCRIPCION_CATEGORIA = DESCRIPCION_CATEGORIA;
+  }
+}
+
+module.exports = Categoria;
