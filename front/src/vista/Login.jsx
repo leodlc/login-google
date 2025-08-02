@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import { auth, provider, signInWithPopup } from '../firebase';
+import { loginConGoogle } from '../controlador/AuthController';
+import GoogleIcon from '@mui/icons-material/Google';
+import ValidatedInput from '../componentes/ValidatedInput';
+
+
 import {
   Box,
   Button,
@@ -14,6 +20,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [formulario, setFormulario] = useState({ username: '', password: '' });
+  const regexUsername = /[a-zA-Z0-9@._-]/; // sin flags globales
+  const regexPassword = /[\w@.-]/;         // sin flags globales
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
@@ -53,27 +61,27 @@ const Login = () => {
           Iniciar Sesión
         </Typography>
         <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
+          <ValidatedInput
             label="Usuario o Correo"
             name="username"
             value={formulario.username}
             onChange={handleChange}
-            margin="normal"
-            error={!!errores.username}
-            helperText={errores.username}
+            placeholder="Ingresa tu usuario o correo"
+            regexPermitido={regexUsername}
+            error={errores.username}
+            setError={setErrores}
           />
-          <TextField
-            fullWidth
-            label="Contraseña"
-            type="password"
-            name="password"
-            value={formulario.password}
-            onChange={handleChange}
-            margin="normal"
-            error={!!errores.password}
-            helperText={errores.password}
-          />
+            <ValidatedInput
+              label="Contraseña"
+              name="password"
+              type="password"
+              value={formulario.password}
+              onChange={handleChange}
+              placeholder="Ingresa tu contraseña"
+              regexPermitido={regexPassword}
+              error={errores.password}
+              setError={setErrores}
+            />
           <Button
             type="submit"
             variant="contained"
@@ -83,6 +91,29 @@ const Login = () => {
           >
             Iniciar Sesión
           </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            startIcon={<GoogleIcon />}
+            onClick={async () => {
+              try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+
+                const data = await loginConGoogle(user);
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                navigate('/dashboard');
+              } catch (error) {
+                console.error('Error con Google Login:', error);
+                setMensaje('Fallo al iniciar sesión con Google');
+              }
+            }}
+            sx={{ mt: 2 }}
+          >
+            Iniciar con Google
+          </Button>
+
         </form>
 
         {mensaje && (

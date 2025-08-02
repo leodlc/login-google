@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import {
   Box,
-  TextField,
   Button,
   Typography,
+  TextField,
   Alert,
   Paper,
   CircularProgress,
 } from '@mui/material';
+import ValidatedInput from '../componentes/ValidatedInput';
 import { registrarUsuario, obtenerUsuarios } from '../controlador/RegistroUsuarioController';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,22 +23,80 @@ const RegistroUsuario = () => {
     IMAGEN_URL: '',
   });
 
+  const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
-  const [cargando, setCargando] = useState(false); // ⬅️ nuevo estado
+  const [cargando, setCargando] = useState(false);
+
+  // Regex para validar caracteres por campo
+  const regexNombre = /^[a-zA-Z\s]*$/;
+  const regexUsername = /^[a-zA-Z0-9._-]*$/;
+  const regexPassword = /^[a-zA-Z0-9@._-]*$/;
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  // Validación del formato completo de email (más estricto)
+  const validarEmail = (email) => {
+    // Debe tener texto antes del @, solo un @, dominio y terminar en .com
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[cC][oO][mM]$/;
+    // Esto permite solo un punto antes del ".com" y termina en .com
+    // Puedes hacerlo más estricto según necesidades
+    return emailRegex.test(email);
+  };
+
+  // Validación contraseña (por ejemplo mínimo 6 caracteres y solo caracteres permitidos)
+  const validarContrasena = (contrasena) => {
+    if (contrasena.length < 6) return false;
+    // Ya filtramos caracteres no permitidos en el input, aquí solo verificar longitud
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje('');
     setError('');
-    setCargando(true); // ⬅️ empieza la carga
+    setErrores({});
+    setCargando(true);
+
+    // Validar campos
+    const nuevosErrores = {};
+
+    if (!formData.NOMBRE_USUARIO.trim()) {
+      nuevosErrores.NOMBRE_USUARIO = 'El nombre es obligatorio';
+    } else if (!regexNombre.test(formData.NOMBRE_USUARIO)) {
+      nuevosErrores.NOMBRE_USUARIO = 'Solo se permiten letras y espacios';
+    }
+
+    if (!formData.USERNAME_USUARIO.trim()) {
+      nuevosErrores.USERNAME_USUARIO = 'El nombre de usuario es obligatorio';
+    } else if (!regexUsername.test(formData.USERNAME_USUARIO)) {
+      nuevosErrores.USERNAME_USUARIO = 'Caracteres inválidos en nombre de usuario';
+    }
+
+    if (!formData.CORREO.trim()) {
+      nuevosErrores.CORREO = 'El correo es obligatorio';
+    } else if (!validarEmail(formData.CORREO)) {
+      nuevosErrores.CORREO = 'Correo no es válido o no termina en .com';
+    }
+
+    if (!formData.CONTRASENA) {
+      nuevosErrores.CONTRASENA = 'La contraseña es obligatoria';
+    } else if (!validarContrasena(formData.CONTRASENA)) {
+      nuevosErrores.CONTRASENA = 'Contraseña inválida (mínimo 6 caracteres)';
+    }
+
+    // No validamos URL (puede estar vacío o cualquier cosa)
+
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrores(nuevosErrores);
+      setCargando(false);
+      return;
+    }
 
     try {
+      // Comprobar si username ya existe
       const usuarios = await obtenerUsuarios();
       const usernameExiste = usuarios.some(
         u => u.USERNAME_USUARIO.toLowerCase() === formData.USERNAME_USUARIO.toLowerCase()
@@ -45,10 +104,11 @@ const RegistroUsuario = () => {
 
       if (usernameExiste) {
         setError('El nombre de usuario ya existe, elige otro.');
-        setCargando(false); // ⬅️ termina la carga en error
+        setCargando(false);
         return;
       }
 
+      // Preparar datos para enviar
       const usuarioParaEnviar = {
         NOMBRE_USUARIO: formData.NOMBRE_USUARIO,
         USERNAME_USUARIO: formData.USERNAME_USUARIO,
@@ -73,7 +133,7 @@ const RegistroUsuario = () => {
     } catch (err) {
       setError(err.error || 'Error al registrar el usuario');
     } finally {
-      setCargando(false); // ⬅️ termina la carga al final
+      setCargando(false);
     }
   };
 
@@ -83,23 +143,27 @@ const RegistroUsuario = () => {
         <Typography variant="h5" textAlign="center" gutterBottom>
           Registro de Usuario
         </Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
+        <form onSubmit={handleSubmit} noValidate>
+          <ValidatedInput
             label="Nombre completo"
             name="NOMBRE_USUARIO"
             value={formData.NOMBRE_USUARIO}
             onChange={handleChange}
-            margin="normal"
+            regexPermitido={regexNombre}
+            error={errores.NOMBRE_USUARIO}
+            setError={setErrores}
+            placeholder="Solo letras y espacios"
             required
           />
-          <TextField
-            fullWidth
+          <ValidatedInput
             label="Nombre de usuario"
             name="USERNAME_USUARIO"
             value={formData.USERNAME_USUARIO}
             onChange={handleChange}
-            margin="normal"
+            regexPermitido={regexUsername}
+            error={errores.USERNAME_USUARIO}
+            setError={setErrores}
+            placeholder="Letras, números, punto, guion bajo o medio"
             required
           />
           <TextField
@@ -110,16 +174,20 @@ const RegistroUsuario = () => {
             value={formData.CORREO}
             onChange={handleChange}
             margin="normal"
+            error={!!errores.CORREO}
+            helperText={errores.CORREO}
             required
           />
-          <TextField
-            fullWidth
+          <ValidatedInput
             label="Contraseña"
             name="CONTRASENA"
             type="password"
             value={formData.CONTRASENA}
             onChange={handleChange}
-            margin="normal"
+            regexPermitido={regexPassword}
+            error={errores.CONTRASENA}
+            setError={setErrores}
+            placeholder="Mínimo 6 caracteres"
             required
           />
           <TextField
@@ -136,8 +204,8 @@ const RegistroUsuario = () => {
             variant="contained"
             color="primary"
             sx={{ mt: 2 }}
-            disabled={cargando} // ⬅️ deshabilitar mientras se carga
-            endIcon={cargando && <CircularProgress size={20} />} // ⬅️ spinner opcional
+            disabled={cargando}
+            endIcon={cargando && <CircularProgress size={20} />}
           >
             {cargando ? 'Registrando...' : 'Registrarse'}
           </Button>

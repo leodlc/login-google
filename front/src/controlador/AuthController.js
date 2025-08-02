@@ -7,7 +7,21 @@ export const login = async (username, password) => {
     username,
     password,
   });
-  return response.data; // { message, token, usuario }
+  return response.data;
+};
+
+export const loginConGoogle = async (googleUser) => {
+  // Puedes ajustar los campos según los que uses en tu backend
+  const { email, displayName, photoURL, uid } = googleUser;
+
+  const response = await axios.post(`${config.SERVER_URL}/auth/google-login`, {
+    email,
+    nombre: displayName,
+    foto: photoURL,
+    uid,
+  });
+
+  return response.data; // { token, usuario }
 };
 
 export const logout = () => {

@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const { httpError } = require('../helpers/handleError');
 const db = require('../../config/mysql');
 
+
+
 const listarUsuarios = async (req, res) => {
   try {
     const query = 'SELECT ID_USUARIO, NOMBRE_USUARIO, USERNAME_USUARIO, CORREO_USUARIO, IMG_URL_USUARIO FROM USUARIO';

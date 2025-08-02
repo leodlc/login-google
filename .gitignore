@@ -2,6 +2,7 @@
 node_modules/
 .DS_Store
 
+server/config/logisticone-64ec0-firebase-adminsdk-fbsvc-34124dd401.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,4 +1,3 @@
-// src/pages/Categorias.jsx
 import React, { useEffect, useState } from 'react';
 import { obtenerCategorias, crearCategoria } from '../controlador/CategoriaController';
 import {
@@ -9,19 +8,24 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  TextField,
   Typography,
   Card,
   CardContent,
   CardHeader
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ValidatedInput from '../componentes/ValidatedInput';
 
 const Categorias = () => {
   const [categorias, setCategorias] = useState([]);
   const [busqueda, setBusqueda] = useState('');
   const [openModal, setOpenModal] = useState(false);
+  const [errores, setErrores] = useState({});
   const [nuevaCategoria, setNuevaCategoria] = useState({ nombre: '', descripcion: '' });
+
+  // Regex
+  const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+  const regexDescripcion = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9.,:;()\-_\s]+$/;
 
   useEffect(() => {
     cargarCategorias();
@@ -40,16 +44,25 @@ const Categorias = () => {
 
   const handleCloseModal = () => {
     setNuevaCategoria({ nombre: '', descripcion: '' });
+    setErrores({});
     setOpenModal(false);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === 'descripcion' && value.length > 250) {
+      return; // Bloquea escribir más de 250 caracteres
+    }
+
     setNuevaCategoria((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCrearCategoria = async () => {
-    if (!nuevaCategoria.nombre.trim()) return;
+    if (!nuevaCategoria.nombre.trim()) {
+      alert('El nombre de la categoría es obligatorio.');
+      return;
+    }
 
     const categoria = {
       ID_CATEGORIA: Math.floor(Math.random() * 1000000),
@@ -76,13 +89,15 @@ const Categorias = () => {
         </Button>
       </Box>
 
-      <TextField
-        fullWidth
+      <ValidatedInput
         label="Buscar categoría"
-        variant="outlined"
+        name="busqueda"
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
-        sx={{ mb: 3, maxWidth: 400 }}
+        regexPermitido={/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/}
+        placeholder="Buscar..."
+        setError={setErrores}
+        error={errores.busqueda}
       />
 
       <Grid container spacing={2}>
@@ -103,24 +118,25 @@ const Categorias = () => {
       <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
         <DialogTitle>Nueva Categoría</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
+          <ValidatedInput
             label="Nombre"
-            fullWidth
             name="nombre"
             value={nuevaCategoria.nombre}
             onChange={handleInputChange}
+            regexPermitido={regexNombre}
+            placeholder="Nombre de la categoría"
+            error={errores.nombre}
+            setError={setErrores}
           />
-          <TextField
-            margin="dense"
-            label="Descripción"
-            fullWidth
-            multiline
-            rows={3}
+          <ValidatedInput
+            label="Descripción (máx. 250 caracteres)"
             name="descripcion"
             value={nuevaCategoria.descripcion}
             onChange={handleInputChange}
+            regexPermitido={regexDescripcion}
+            placeholder="Descripción"
+            error={errores.descripcion}
+            setError={setErrores}
           />
         </DialogContent>
         <DialogActions>

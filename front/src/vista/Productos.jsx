@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  TextField,
   Typography,
   Checkbox,
   FormControlLabel,
@@ -26,6 +25,7 @@ import {
 } from '../controlador/ProductoController';
 import { obtenerCategorias } from '../controlador/CategoriaController';
 import ProductoCard from '../componentes/ProductoCard';
+import ValidatedInput from '../componentes/ValidatedInput';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -34,6 +34,7 @@ const Productos = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null);
+  const [errores, setErrores] = useState({});
 
   const [formProducto, setFormProducto] = useState({
     ID_CATEGORIA: '',
@@ -73,6 +74,7 @@ const Productos = () => {
       IMG_URL_PRODUCTO: '',
       IVA_PRODUCTO: false,
     });
+    setErrores({});
     setOpenModal(true);
   };
 
@@ -83,6 +85,7 @@ const Productos = () => {
       ...producto,
       PRECIO_PRODUCTO: producto.PRECIO_PRODUCTO.toString()
     });
+    setErrores({});
     setOpenModal(true);
   };
 
@@ -151,16 +154,18 @@ const Productos = () => {
         </Button>
       </Box>
 
-      <TextField
-        fullWidth
+      <ValidatedInput
         label="Buscar producto"
-        variant="outlined"
+        name="busqueda"
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
-        sx={{ mb: 3, maxWidth: 400 }}
+        placeholder="Buscar por nombre"
+        regexPermitido={/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]*$/}
+        error={''}
+        setError={() => {}}
       />
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} mt={1}>
         {productosFiltrados.map(producto => (
           <Grid item xs={12} sm={6} md={4} key={producto.ID_PRODUCTO}>
             <ProductoCard
@@ -193,43 +198,51 @@ const Productos = () => {
             </Select>
           </FormControl>
 
-          <TextField
-            margin="dense"
+          <ValidatedInput
             label="Nombre"
             name="NOMBRE_PRODUCTO"
-            fullWidth
             value={formProducto.NOMBRE_PRODUCTO}
             onChange={handleInputChange}
-            required
+            placeholder="Nombre del producto"
+            regexPermitido={/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]{0,100}$/}
+            error={errores.NOMBRE_PRODUCTO}
+            setError={setErrores}
           />
-          <TextField
-            margin="dense"
+
+          <ValidatedInput
             label="Descripción"
             name="DESCRIPCION_PRODUCTO"
-            fullWidth
-            multiline
-            rows={3}
             value={formProducto.DESCRIPCION_PRODUCTO}
             onChange={handleInputChange}
+            placeholder="Descripción detallada"
+            regexPermitido={/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9.,\s]{0,500}$/}
+            error={errores.DESCRIPCION_PRODUCTO}
+            setError={setErrores}
           />
-          <TextField
-            margin="dense"
+
+          <ValidatedInput
             label="Precio"
             name="PRECIO_PRODUCTO"
-            type="number"
-            fullWidth
             value={formProducto.PRECIO_PRODUCTO}
             onChange={handleInputChange}
-            required
+            placeholder="0.00"
+            regexPermitido={/^[0-9.]{0,10}$/}
+            error={errores.PRECIO_PRODUCTO}
+            setError={setErrores}
+            type="text"
           />
-          <TextField
-            margin="dense"
+
+          <ValidatedInput
             label="URL Imagen"
             name="IMG_URL_PRODUCTO"
-            fullWidth
             value={formProducto.IMG_URL_PRODUCTO}
             onChange={handleInputChange}
+            placeholder="http://imagen.jpg"
+            regexPermitido={/^.{0,500}$/}
+            error={errores.IMG_URL_PRODUCTO}
+            setError={setErrores}
           />
+
           <FormControlLabel
             control={
               <Checkbox
