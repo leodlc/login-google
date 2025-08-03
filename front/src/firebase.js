@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth,
   GoogleAuthProvider,
-  signInWithPopup // ✅ IMPORTAR AQUÍ
+  signInWithPopup
 } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
@@ -12,7 +12,7 @@ const firebaseConfig = {
   authDomain: "logisticone-64ec0.firebaseapp.com",
   databaseURL: "https://logisticone-64ec0-default-rtdb.firebaseio.com",
   projectId: "logisticone-64ec0",
-  storageBucket: "logisticone-64ec0.appspot.com", // ⚠️ corregido .app → .com
+  storageBucket: "logisticone-64ec0.appspot.com",
   messagingSenderId: "203645913004",
   appId: "1:203645913004:web:db0eb544d614f18dff5c09"
 };
